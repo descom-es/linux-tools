@@ -29,5 +29,5 @@ if [ $APP_UPGRADE == "yum" ]; then
     NUM_UPDATES=$(/usr/bin/yum -q check-update 2>/dev/null | /bin/grep -v '^$' | wc -l)
 fi
 
-echo "${NUM_UPDATES} upgrades pending"
-exit $NUM_UPDATES
+echo "{\"num_upgrades\": ${NUM_UPDATES}}"
+exit 0
