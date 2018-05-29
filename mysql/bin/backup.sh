@@ -22,7 +22,7 @@ fi
 if [ -z ${MYSQL_AUTH} ]; then
     if [ -f "/etc/psa/.psa.shadow" ];then
         MYSQL_PASS=`cat /etc/psa/.psa.shadow`
-        MYSQL_AUTH=" -uadmin -p\"${MYSQL_PASS}\" "
+        MYSQL_AUTH=" -uadmin -p${MYSQL_PASS} "
     elif [ -f "/etc/mysql/debian.cnf" ];then
         MYSQL_AUTH=" --defaults-file=/etc/mysql/debian.cnf "
     fi
@@ -50,7 +50,7 @@ for db in $dbs;do
     done
 
     if [ $IS_EXCLUDE == 0 ]; then
-        mysqldump --opt --routines=true ${MYSQL_AUTH} $db | gzip -c | "${PATH_BACKUP}/bck_$db.gz"
+        mysqldump --opt --routines=true ${MYSQL_AUTH} $db | gzip -c > "${PATH_BACKUP}/bck_$db.gz"
         if [ $? != 0 ];then
             JSON_DB_ERR="${JSON_DB_ERR}${db}; "
             EXIT_CODE=3

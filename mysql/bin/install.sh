@@ -13,8 +13,8 @@ if [ ! -d "$PATH_INSTALL" ]; then
 
     chmod -R 750 "$PATH_INSTALL/bin/"
 
-    if [ ! -f "/etc/crond.d/mysql_backup" ];then
-        echo "30 1  * * *    root    ${PATH_INSTALL}/bin/backup.sh" > "/etc/crond.d/mysql_backup"
+    if [ ! -f "/etc/cron.d/mysql_backup" ];then
+        echo "30 1  * * *    root    ${PATH_INSTALL}/bin/backup.sh" > "/etc/cron.d/mysql_backup"
         service cron reload
     fi
 
