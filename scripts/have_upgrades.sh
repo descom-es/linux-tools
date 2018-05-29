@@ -37,8 +37,8 @@ if [ $APP_UPGRADE == "yum" ]; then
     fi
 fi
 
-UPDATES=$(echo "$PACKAGES" | awk 'BEGIN {print "["} {printf "%s{\"name\": \"%s\"}",separator , $1; separator=", "} END {print "]"}')
-NUM_UPDATES=$(echo "$PACKAGES" | wc -l)
+UPDATES=$(echo "$PACKAGES" | /bin/grep -v '^$' | awk 'BEGIN {print "["} {printf "%s{\"name\": \"%s\"}",separator , $1; separator=", "} END {print "]"}')
+NUM_UPDATES=$(echo "$PACKAGES" | /bin/grep -v '^$' | wc -l)
 
 echo "{\"status\": true, \"count\": ${NUM_UPDATES}, \"packages\": ${UPDATES}}"
 exit 0
