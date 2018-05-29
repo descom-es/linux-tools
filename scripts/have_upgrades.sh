@@ -10,7 +10,7 @@ else
     if  [ $? == 0 ];then
         APP_UPGRADE="yum"
     else
-        echo "Error: Upgrade not supported"
+        echo "{\"status\": false, \"message\": \"SO not is compatible\"}"
         exit -1
     fi
 fi
@@ -18,16 +18,27 @@ fi
 if [ $APP_UPGRADE == "apt" ]; then
     apt-get update > /dev/null
     if [ $? != 0 ]; then
-        echo "Error: apt-get update failed"
+        echo "{\"status\": false, \"message\": \"apt-get update failed\"}"
         exit -1
     else
-        NUM_UPDATES=$(/usr/bin/apt-get -s upgrade | grep "^Inst" | wc -l)
+        PACKAGES=$(/usr/bin/apt-get -s upgrade | grep "^Inst" | awk '{print $2}')
+        if [ $? != 0 ]; then
+            echo "{\"status\": false, \"message\": \"apt-get upgrade failed\"}"
+            exit -1
+        fi
     fi
 fi
 
 if [ $APP_UPGRADE == "yum" ]; then
-    NUM_UPDATES=$(/usr/bin/yum -q check-update 2>/dev/null | /bin/grep -v '^$' | wc -l)
+    PACKAGES=$(/usr/bin/yum -q check-update 2>/dev/null | /bin/grep -v '^$' | awk '{print $1}')
+    if [ $? != 0 ]; then
+        echo "{\"status\": false, \"message\": \"yum check-update failed\"}"
+        exit -1
+    fi
 fi
 
-echo "{\"num_upgrades\": ${NUM_UPDATES}}"
+UPDATES=$(echo "$PACKAGES" | awk 'BEGIN {print "["} {printf "%s{\"name\": \"%s\"}",separator , $1; separator=", "} END {print "]"}')
+NUM_UPDATES=$(echo "$PACKAGES" | wc -l)
+
+echo "{\"status\": true, \"count\": ${NUM_UPDATES}, \"packages\": ${UPDATES}}"
 exit 0
