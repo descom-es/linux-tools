@@ -5,6 +5,7 @@ APPPATH="${APPPATH}/../"
 
 DB_EXCLUDES=("information_schema" "performance_schema")
 PATH_BACKUP="${APPPATH}/var/"
+PATH_LIB="${APPPATH}/lib/"
 
 if [ -f "$APPPATH/etc/backup.cfg" ];then
     . "$APPPATH/etc/backup.cfg"
@@ -26,8 +27,11 @@ fi
 
 EXIT_CODE=0
 
-JSON_DB_OK=""
-JSON_DB_ERR=""
+STATUS=1
+NUM_OK=0
+NUM_KO=0
+JSON_OK=""
+JSON_KO=""
 
 for db in $dbs;do
     IS_EXCLUDE=0
@@ -41,17 +45,22 @@ for db in $dbs;do
     if [ $IS_EXCLUDE == 0 ]; then
 		finded=$(find ${PATH_BACKUP}bck_$db.gz -ctime -1 | wc -l)
         if [ $? != 0 ];then
-            JSON_DB_ERR="${JSON_DB_ERR}${db}; "
+            STATUS=0
             EXIT_CODE=3
         else
 			if [ "$finded" = 1 ];then
-				JSON_DB_OK="${JSON_DB_OK}${db}; "
+				((NUM_OK++))
+				JSON_OK="${JSON_OK}${db}; "
 			else
-				JSON_DB_ERR="${JSON_DB_ERR}${db}; "
+				STATUS=0
+				((NUM_KO++))
+				JSON_KO="${JSON_KO}${db}; "
 			fi
 		fi
     fi
 done
 
-echo "{\"check_ok\": \"${JSON_DB_OK}\", \"check_error\": \"${JSON_DB_ERR}\"}"
+echo "{\"status\": \"${STATUS}\", \"statuses\": {\"ok\": \"${NUM_OK}\", \"error\": \"${NUM_KO}\"}, \"data\": {\"ok\": \"${JSON_OK}\", \"error\": \"${JSON_KO}\"}}" > "$PATH_VAR"/status_mysql_backup.status
+echo "{\"status\": \"${STATUS}\", \"statuses\": {\"ok\": \"${NUM_OK}\", \"error\": \"${NUM_KO}\"}}"
+
 exit $EXIT_CODE
