@@ -56,8 +56,14 @@ done
 
 if [ $EXIT_CODE -eq 0 ];then
     echo "{\"message\": \"Backup doing succefull\", \"ok\": \"${JSON_DB_OK}\"}"
+    
+    if [ -f "${PATH_BACKUP}/error_last_backup" ]; then
+        rm "${PATH_BACKUP}/error_last_backup"
+    fi
 else
     echo "{\"message\": \"Backup doing succefull\", \"ok\": \"${JSON_DB_OK}\", \"error\": \"${JSON_DB_ERR}\"}"
+    
+    touch "${PATH_BACKUP}/error_last_backup"
 fi
 
 exit $EXIT_CODE
