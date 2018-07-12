@@ -5,6 +5,7 @@ APPPATH="${APPPATH}/../"
 
 DB_EXCLUDES=("information_schema" "performance_schema")
 PATH_BACKUP="${APPPATH}/var/"
+PATH_LIB="${APPPATH}/lib/"
 
 if [ -f "$APPPATH/etc/backup.cfg" ];then
     . "$APPPATH/etc/backup.cfg"
@@ -19,16 +20,7 @@ if [ ! -d "${PATH_BACKUP}" ]; then
     mkdir -p "${PATH_BACKUP}"
 fi
 
-if [ -z ${MYSQL_AUTH} ]; then
-    if [ -f "/etc/psa/.psa.shadow" ];then
-        MYSQL_PASS=`cat /etc/psa/.psa.shadow`
-        MYSQL_AUTH=" -uadmin -p${MYSQL_PASS} "
-    elif [ -f "/etc/mysql/debian.cnf" ];then
-        U=$(cat /etc/mysql/debian.cnf | grep ^user | awk '{print $3}' | head -1)
-        P=$(cat /etc/mysql/debian.cnf | grep ^password | awk '{print $3}' | head -1)
-        MYSQL_AUTH=" -u${U} -p${P} "
-    fi
-fi
+. "${PATH_LIB}/detectauth.sh"
 
 dbs=$(mysql ${MYSQL_AUTH} -BN -e "show databases")
 
