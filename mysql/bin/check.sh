@@ -54,7 +54,7 @@ for DB in `$MYSQL -e "show databases"`; do
 				((NUM_NOTE++))
                 ;;
 			warning)
-				((NUM_WARNIG++))
+				((NUM_WARNING++))
                 ;;
 			error)
 				((NUM_ERROR++))
