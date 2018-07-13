@@ -34,10 +34,16 @@ else
     if [ "$MUST_UPGRADE" == "1" ]; then
         echo "upgrade ..."
         
+        # REMOVE WHEN UPGRADE ALL, PATCH
         if [ -d /tmp/mysql_backup_cur ];then
-            # REMOVE WHEN UPGRADE ALL, PATCH
+            if [ ! -d "${PATH_INSTALL}/var" ];then  
+                if [ -d /tmp/mysql_backup_cur/mysql_backup/var ];then
+                    mv /tmp/mysql_backup_cur/mysql_backup/var "${PATH_INSTALL}"
+                fi
+            fi
             rm -rf /tmp/mysql_backup_cur
         fi
+        # END PATCH
         
         if [ -d "${PATH_INSTALL}/../mysql_backup_var" ];then
             rm -rf "${PATH_INSTALL}/../mysql_backup_var"
