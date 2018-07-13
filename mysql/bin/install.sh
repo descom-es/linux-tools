@@ -18,7 +18,6 @@ if [ ! -d "$PATH_INSTALL" ]; then
 
     exit 0
 else
-    echo "${PATH_INSTALL} exists"
     MUST_UPGRADE="1"
 
     if [ -f "${PATH_INSTALL}/version" ]; then
@@ -45,11 +44,10 @@ else
         fi
         # END PATCH
         
-        echo "${APPPATH}/*" "${PATH_INSTALL}/"
-        cp -pr "${APPPATH}/*" "${PATH_INSTALL}/"
-        chmod -R 750 "$PATH_INSTALL/bin/"
+        yes | cp -pr "${APPPATH}/*" "${PATH_INSTALL}/"
+        chmod -R 750 "${PATH_INSTALL}/bin/"
         
-        echo "upgrade ok"
+        echo "upgrade ok v$(cat ${PATH_INSTALL}/version)"
     fi
 
     exit 0
