@@ -33,14 +33,24 @@ else
 
     if [ "$MUST_UPGRADE" == "1" ]; then
         echo "upgrade ..."
-        mv "${PATH_INSTALL}" /tmp/mysql_backup_cur
+        
+        if [ -d /tmp/mysql_backup_cur ];then
+            # REMOVE WHEN UPGRADE ALL, PATCH
+            rm -rf /tmp/mysql_backup_cur
+        fi
+        
+        if [ -d "${PATH_INSTALL}/../mysql_backup_var" ];then
+            rm -rf "${PATH_INSTALL}/../mysql_backup_var"
+        fi
+ 
+        mv "${PATH_INSTALL}/var" "${PATH_INSTALL}/../mysql_backup_var"
 
         mkdir -p "$PATH_INSTALL"
         chmod 750 "$PATH_INSTALL"
         cp -pr "${APPPATH}" "$PATH_INSTALL"
         chmod -R 750 "$PATH_INSTALL/bin/"
 
-        mv /tmp/mysql_backup_cur/var "${PATH_INSTALL}"
+        mv "${PATH_INSTALL}/../mysql_backup_var" "${PATH_INSTALL}"
 
         echo "upgrade ok"
     fi
