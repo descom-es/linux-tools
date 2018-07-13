@@ -44,20 +44,12 @@ else
             rm -rf /tmp/mysql_backup_cur
         fi
         # END PATCH
-        
-        if [ -d "${PATH_INSTALL}/../mysql_backup_var" ];then
-            rm -rf "${PATH_INSTALL}/../mysql_backup_var"
-        fi
- 
-        mv "${PATH_INSTALL}/var" "${PATH_INSTALL}/../mysql_backup_var"
 
         mkdir -p "$PATH_INSTALL"
         chmod 750 "$PATH_INSTALL"
-        cp -pr "${APPPATH}" "$PATH_INSTALL"
+        cp -pr "${APPPATH}/*" "$PATH_INSTALL"
         chmod -R 750 "$PATH_INSTALL/bin/"
-
-        mv "${PATH_INSTALL}/../mysql_backup_var" "${PATH_INSTALL}"
-
+        
         echo "upgrade ok"
     fi
 
