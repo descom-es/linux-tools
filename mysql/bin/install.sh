@@ -44,7 +44,9 @@ else
         fi
         # END PATCH
         
-        yes | cp -pr "${APPPATH}/*" "${PATH_INSTALL}/"
+        yes | cp -pr "${APPPATH}/bin" "${PATH_INSTALL}/"
+        yes | cp -pr "${APPPATH}/lib" "${PATH_INSTALL}/"
+        yes | cp -pr "${APPPATH}/version" "${PATH_INSTALL}/"
         chmod -R 750 "${PATH_INSTALL}/bin/"
         
         echo "upgrade ok v$(cat ${PATH_INSTALL}/version)"
