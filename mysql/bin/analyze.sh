@@ -35,35 +35,32 @@ NUM_INFO=0
 NUM_UNKNOWN=0
 
 DATA=""
+for TB in `$MYSQL -e "SELECT CONCAT(TABLE_SCHEMA, '.', TABLE_NAME) as name FROM   information_schema.TABLES WHERE ENGINE IN ('InnoDB', 'MyISAM')"`; do
+	RESULT=`$MYSQL $DB -e "ANALYZE TABLE $TB" | awk '{ printf $1"|"$3"|"; for (i=4; i<NF; i++){ printf $i" ";};print $NF }'`
+	MSG_TYPE=`echo $RESULT | awk -F "|" '{print $2}'`
+	MSG=`echo "$RESULT" | awk -F "|" '{print $NF}'`
+	DATA=$DATA", {\"table\": \"$DB.$TB\", \"type\": \"$MSG_TYPE\", \"msg\": \"$MSG\"}"
 
-for DB in `$MYSQL -e "show databases"`; do
-	for TB in `$MYSQL $DB -e "show tables"`; do
-		RESULT=`$MYSQL $DB -e "ANALYZE TABLE $TB" | awk '{ printf $1"|"$3"|"; for (i=4; i<NF; i++){ printf $i" ";};print $NF }'`
-		MSG_TYPE=`echo $RESULT | awk -F "|" '{print $2}'`
-		MSG=`echo "$RESULT" | awk -F "|" '{print $NF}'`
-		DATA=$DATA", {\"table\": \"$DB.$TB\", \"type\": \"$MSG_TYPE\", \"msg\": \"$MSG\"}"
-
-		case "$MSG_TYPE" in
-			status)
-				((NUM_OK++))
-				;;
-			info)
-				((NUM_INFO++))
-                ;;
-			note)
-				((NUM_NOTE++))
-                ;;
-			warning)
-				((NUM_WARNING++))
-                ;;
-			error)
-				((NUM_ERROR++))
-                ;;
-			*)
-				((NUM_UNKNOWN++))
-				;;
-		esac
-	done
+	case "$MSG_TYPE" in
+		status)
+			((NUM_OK++))
+			;;
+		info)
+			((NUM_INFO++))
+	;;
+		note)
+			((NUM_NOTE++))
+	;;
+		warning)
+			((NUM_WARNING++))
+	;;
+		error)
+			((NUM_ERROR++))
+	;;
+		*)
+			((NUM_UNKNOWN++))
+			;;
+	esac
 done
 
 if [ $NUM_ERROR -gt 0 ]; then
