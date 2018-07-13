@@ -44,10 +44,9 @@ else
             rm -rf /tmp/mysql_backup_cur
         fi
         # END PATCH
-
-        mkdir -p "$PATH_INSTALL"
-        chmod 750 "$PATH_INSTALL"
-        cp -pr "${APPPATH}/*" "$PATH_INSTALL"
+        
+        echo "${APPPATH}/*" "${PATH_INSTALL}/"
+        cp -pr "${APPPATH}/*" "${PATH_INSTALL}/"
         chmod -R 750 "$PATH_INSTALL/bin/"
         
         echo "upgrade ok"
