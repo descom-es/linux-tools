@@ -35,9 +35,13 @@ NUM_INFO=0
 NUM_UNKNOWN=0
 
 DATA=""
-for TB in `$MYSQL -e "SELECT CONCAT(TABLE_SCHEMA, '.', TABLE_NAME) as name FROM information_schema.TABLES WHERE ENGINE IN ('InnoDB', 'MyISAM') AND TABLE_SCHEMA<>'information_schema' AND TABLE_NAME NOT LIKE '%-%'"`; do
+for TB in `$MYSQL -e "SELECT CONCAT(TABLE_SCHEMA, '.', TABLE_NAME) as name FROM information_schema.TABLES WHERE ENGINE IN ('InnoDB', 'MyISAM') AND TABLE_SCHEMA<>'information_schema'"`; do
+	DB=`echo "$TB" | awk -F "." '{print $1}'`
+	TB=`echo "$TB" | awk -F "." '{print $2}'`
+	TB="\`${DB}\`.\`${TB}\`"
+	
 	RESULT=`$MYSQL -e "ANALYZE TABLE $TB" | awk '{ printf $1"|"$3"|"; for (i=4; i<NF; i++){ printf $i" ";};print $NF }'`
-	MSG_TYPE=`echo $RESULT | awk -F "|" '{print $2}'`
+	MSG_TYPE=`echo $RESULT | awk -F "|" '{print $2}' | awk '{print tolower($0)}'`
 	MSG=`echo "$RESULT" | awk -F "|" '{print $NF}'`
 	DATA=$DATA", {\"table\": \"$DB.$TB\", \"type\": \"$MSG_TYPE\", \"msg\": \"$MSG\"}"
 
