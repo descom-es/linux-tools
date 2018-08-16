@@ -37,7 +37,7 @@ NUM_UNKNOWN=0
 DATA=""
 
 for DB in `$MYSQL -e "show databases"`; do
-	for TB in `$MYSQL $DB -e "show tables"`; do
+	for TB in `$MYSQL $DB -e "show tables" | grep -v "-"`; do
 		RESULT=`$MYSQL $DB -e "CHECK TABLE $TB" | awk '{ printf $1"|"$3"|"; for (i=4; i<NF; i++){ printf $i" ";};print $NF }'`
 		MSG_TYPE=`echo $RESULT | awk -F "|" '{print $2}'`
 		MSG=`echo "$RESULT" | awk -F "|" '{print $NF}'`
