@@ -87,7 +87,14 @@ fi
 
 echo "{\"status\": \"$STATUS\", \"statuses\": {\"ok\": $NUM_OK, \"error\": $NUM_ERROR, \"warning\": $NUM_WARNING, \"info\": $NUM_INFO, \"note\": $NUM_NOTE, \"unknown\": $NUM_UNKNOWN}, \"data\": [${DATA:1}]}" > "$PATH_VAR"/status_mysql_check.status
 
-OUT="{\"status\": \"$STATUS\", \"statuses\": {\"ok\": $NUM_OK, \"error\": $NUM_ERROR, \"warning\": $NUM_WARNING, \"info\": $NUM_INFO, \"note\": $NUM_NOTE, \"unknown\": $NUM_UNKNOWN}}"
+NUM_CHAR=`cat "$PATH_VAR"/status_mysql_check.status | wc -c`
+
+if [ ${NUM_CHAR} -ge 500 ];then
+	OUT="{\"status\": \"$STATUS\", \"statuses\": {\"ok\": $NUM_OK, \"error\": $NUM_ERROR, \"warning\": $NUM_WARNING, \"info\": $NUM_INFO, \"note\": $NUM_NOTE, \"unknown\": $NUM_UNKNOWN}}"
+else
+	OUT="{\"status\": \"$STATUS\", \"statuses\": {\"ok\": $NUM_OK, \"error\": $NUM_ERROR, \"warning\": $NUM_WARNING, \"info\": $NUM_INFO, \"note\": $NUM_NOTE, \"unknown\": $NUM_UNKNOWN}, \"data\": [${DATA:1}]}}"
+fi
+
 echo $OUT
 
 exit 0
