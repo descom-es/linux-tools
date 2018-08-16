@@ -86,4 +86,4 @@ echo "{\"status\": \"$STATUS\", \"statuses\": {\"ok\": $NUM_OK, \"error\": $NUM_
 OUT="{\"status\": \"$STATUS\", \"statuses\": {\"ok\": $NUM_OK, \"error\": $NUM_ERROR, \"warning\": $NUM_WARNING, \"info\": $NUM_INFO, \"note\": $NUM_NOTE, \"unknown\": $NUM_UNKNOWN}}"
 echo $OUT
 
-exit $STATUS_EXIT
+exit 0
