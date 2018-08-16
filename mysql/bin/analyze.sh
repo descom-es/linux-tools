@@ -43,7 +43,6 @@ for TB in `$MYSQL -e "SELECT CONCAT(TABLE_SCHEMA, '.', TABLE_NAME) as name FROM 
 	RESULT=`$MYSQL -e "ANALYZE TABLE $TB" | awk '{ printf $1"|"$3"|"; for (i=4; i<NF; i++){ printf $i" ";};print $NF }'`
 	MSG_TYPE=`echo $RESULT | awk -F "|" '{print $2}' | awk '{print tolower($0)}'`
 	MSG=`echo "$RESULT" | awk -F "|" '{print $NF}'`
-	DATA=$DATA", {\"table\": \"$DB.$TB\", \"type\": \"$MSG_TYPE\", \"msg\": \"$MSG\"}"
 
 	case "$MSG_TYPE" in
 		status)
@@ -51,18 +50,21 @@ for TB in `$MYSQL -e "SELECT CONCAT(TABLE_SCHEMA, '.', TABLE_NAME) as name FROM 
 			;;
 		info)
 			((NUM_INFO++))
-	;;
+			;;
 		note)
 			((NUM_NOTE++))
-	;;
+			;;
 		warning)
 			((NUM_WARNING++))
-	;;
+			DATA=$DATA", {\"table\": \"$DB.$TB\", \"type\": \"$MSG_TYPE\", \"msg\": \"$MSG\"}"
+			;;
 		error)
 			((NUM_ERROR++))
-	;;
+			DATA=$DATA", {\"table\": \"$DB.$TB\", \"type\": \"$MSG_TYPE\", \"msg\": \"$MSG\"}"
+			;;
 		*)
 			((NUM_UNKNOWN++))
+			DATA=$DATA", {\"table\": \"$DB.$TB\", \"type\": \"$MSG_TYPE\", \"msg\": \"$MSG\"}"
 			;;
 	esac
 done
