@@ -36,35 +36,38 @@ NUM_UNKNOWN=0
 
 DATA=""
 
-for DB in `$MYSQL -e "show databases"`; do
-	for TB in `$MYSQL $DB -e "show tables" | grep -v "-"`; do
-		RESULT=`$MYSQL $DB -e "CHECK TABLE $TB" | awk '{ printf $1"|"$3"|"; for (i=4; i<NF; i++){ printf $i" ";};print $NF }'`
-		MSG_TYPE=`echo $RESULT | awk -F "|" '{print $2}'`
-		MSG=`echo "$RESULT" | awk -F "|" '{print $NF}'`
-		DATA=$DATA", {\"table\": \"$DB.$TB\", \"type\": \"$MSG_TYPE\", \"msg\": \"$MSG\"}"
+for TB in `$MYSQL -e "SELECT CONCAT(TABLE_SCHEMA, '.', TABLE_NAME) as name FROM information_schema.TABLES WHERE ENGINE IN ('InnoDB', 'MyISAM') AND TABLE_SCHEMA<>'information_schema'"`; do
+	DB=`echo "$TB" | awk -F "." '{print $1}'`
+	TB=`echo "$TB" | awk -F "." '{print $2}'`
+	TB="\`${DB}\`.\`${TB}\`"
+		
+	RESULT=`$MYSQL -e "CHECK TABLE $TB" | awk '{ printf $1"|"$3"|"; for (i=4; i<NF; i++){ printf $i" ";};print $NF }'`
+	MSG_TYPE=`echo $RESULT | awk -F "|" '{print $2}' | awk '{print tolower($0)}'`
+	MSG=`echo "$RESULT" | awk -F "|" '{print $NF}'`
+	DATA=$DATA", {\"table\": \"$TB\", \"type\": \"$MSG_TYPE\", \"msg\": \"$MSG\"}"
 
-		case "$MSG_TYPE" in
-			status)
-				((NUM_OK++))
-				;;
-			info)
-				((NUM_INFO++))
-                ;;
-			note)
-				((NUM_NOTE++))
-                ;;
-			warning)
-				((NUM_WARNING++))
-                ;;
-			error)
-				((NUM_ERROR++))
-                ;;
-			*)
-				((NUM_UNKNOWN++))
-				;;
-		esac
-	done
+	case "$MSG_TYPE" in
+		status)
+			((NUM_OK++))
+			;;
+		info)
+			((NUM_INFO++))
+	;;
+		note)
+			((NUM_NOTE++))
+	;;
+		warning)
+			((NUM_WARNING++))
+	;;
+		error)
+			((NUM_ERROR++))
+	;;
+		*)
+			((NUM_UNKNOWN++))
+			;;
+	esac
 done
+
 
 if [ $NUM_ERROR -gt 0 ]; then
 	STATUS="error"
